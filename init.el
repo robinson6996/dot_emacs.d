@@ -883,7 +883,7 @@ Otherwise call `ediff-buffers' interactively."
   :ensure t
   :commands (paradox-list-packages)
   ;; don't bother trying to integrate with github
-  :init (setq paradox-github-token "e824774aadd65a6c56b1f18958e9ee8119de2686"))
+  :init (setq paradox-github-token nil))
 
 (use-package pcap-mode
   :ensure t
