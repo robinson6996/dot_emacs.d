@@ -1,0 +1,3 @@
+[submodule "gitolite-emacs"]
+	path = vendor/gitolite-emacs
+	url = https://github.com/llloret/gitolite-emacs.git
