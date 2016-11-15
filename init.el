@@ -130,7 +130,7 @@
 (defvar apm-preferred-font-family-package "fonts-inconsolata"
   "Package to install to get `apm-preferred-font-family'.")
 
-(defvar apm-preferred-font-height 117
+(defvar apm-preferred-font-height 100
   "Preferred font height to use.")
 
 (defun apm-graphic-frame-init ()
@@ -267,12 +267,6 @@
           (setq-default TeX-source-correlate-start-server t)
 
           (add-hook 'LaTeX-mode-hook #'apm-latex-mode-setup)))
-
-(use-package browse-kill-ring
-  :ensure t)
-
-(use-package bs
-  :bind ("C-x C-b" . bs-show))
 
 ;; show #if 0 / #endif etc regions in comment face - taken from
 ;; http://stackoverflow.com/questions/4549015/in-c-c-mode-in-emacs-change-face-of-code-in-if-0-endif-block-to-comment-fa
@@ -442,20 +436,22 @@ code sections."
   ;; automatically scroll to first error on output
   :config (setq compilation-scroll-output 'first-error))
 
-;; (use-package counsel
-;;   :ensure t
-;;   :bind (("M-y" . counsel-yank-pop)
-;;          ("C-x C-i" . counsel-imenu)
-;;          ("C-h f" . counsel-describe-function)
-;;          ("C-h v" . counsel-describe-variable))
-;;   :init (progn
-;;           (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-;;           (setq counsel-find-file-at-point t))
-;;   )
+(use-package counsel
+  :ensure t
+  :bind (("M-y" . counsel-yank-pop)
+         ("M-x" . counsel-M-x)
+         ("C-x C-i" . counsel-imenu)
+         ("C-x C-f" . counsel-find-file)
+         ("C-h f" . counsel-describe-function)
+         ("C-h v" . counsel-describe-variable))
+  :init (progn
+          (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+          (setq counsel-find-file-at-point t))
+  )
 
-;; (use-package counsel-projectile
-;;   :ensure t
-;;   :init (counsel-projectile-on))
+(use-package counsel-projectile
+  :ensure t
+  :init (counsel-projectile-on))
 
 (defun apm-coverlay-setup()
   (coverlay-mode 1))
@@ -512,13 +508,45 @@ code sections."
 
 (defun apm-doxymacs-setup()
   (doxymacs-mode)
-  (doxymacs-font-lock))
+  (doxymacs-font-lock)
+  (setq doxymacs-doxygen-style "JavaDoc")
+  (setq doxymacs-file-comment-template
+	("/**" > n
+	 " * " (doxymacs-doxygen-command-char) "file   " (if (buffer-file-name) (file-name-nondirectory (buffer-file-name)) "") > n
+	 " *" > n
+	 " * " (doxymacs-doxygen-command-char) "author " (user-full-name) (doxymacs-user-mail-address) > n
+	 " *" > n
+	 " * " (doxymacs-doxygen-command-char) "date   " (current-time-string) > n
+	 " *" > n
+	 " * " (doxymacs-doxygen-command-char) "brief  " (p "Brief description of this file: ") > n
+	 " *" > n
+	 " * " (doxymacs-doxygen-command-char) "section LICENSE" > n
+	 " *" > n
+	 " * Copyright (©) 2010-2011 EPFL (Ecole Polytechnique Fédérale de Lausanne)" > n
+	 " * Laboratory (LSMS - Laboratoire de Simulation en Mécanique des Solides)" > n " *" > n
+	 " * Akantu is free  software: you can redistribute it and/or  modify it under the" > n
+	 " * terms  of the  GNU Lesser  General Public  License as  published by  the Free" > n
+	 " * Software Foundation, either version 3 of the License, or (at your option) any" > n
+	 " * later version." > n
+	 " *" > n
+	 " * Akantu is  distributed in the  hope that it  will be useful, but  WITHOUT ANY" > n
+	 " * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR" > n
+	 " * A  PARTICULAR PURPOSE. See  the GNU  Lesser General  Public License  for more" > n
+	 " * details." > n
+	 " *" > n
+	 " * You should  have received  a copy  of the GNU  Lesser General  Public License" > n
+	 " * along with Akantu. If not, see <http://www.gnu.org/licenses/>." > n
+	 " *" > n
+	 " */" > n > n
+	 "/* -------------------------------------------------------------------------- */" > n))
+  )
 
 (use-package doxymacs
   :defer t
   :commands (doxymacs-mode doxymacs-font-lock)
   :diminish doxymacs-mode
-  :config (add-hook 'c-mode-common-hook #'apm-doxymacs-setup))
+  :config (add-hook 'c-mode-common-hook #'apm-doxymacs-setup)  
+  )
 
 (use-package dracula-theme
   :ensure t
@@ -934,6 +962,10 @@ Otherwise call `ediff-buffers' interactively."
 (use-package sh-script
   :init (setq-default sh-basic-offset 2
                       sh-indentation 2))
+
+(use-package smex
+  :ensure t
+  :config (smex-initialize))
 
 (use-package spaceline-config
   :ensure spaceline
