@@ -4,11 +4,9 @@
 ;;
 
 ;;; Code:
-(setq user-full-name "Nicolas Richart")
-(setq user-mail-address "nicolas.richart@epfl.ch")
 
 ;; Risky !!!
-(setq enable-local-variables :all)
+(setq enable-local-variables :safe)
 
 ;; gpg preferences
 (setq epa-armor t)
@@ -95,9 +93,11 @@
 ;; Show line column numbers in mode line
 (line-number-mode 1)
 (column-number-mode 1)
-
 ;; Parent highlight
-(setq show-paren-mode t)
+(show-paren-mode 1)
+
+;; Prefer space over tab
+(setq indent-tabs-mode nil)
 
 ;;; --- Global Shortcuts -------------------------------------------------------
 (global-set-key "\C-c\;" 'comment-region)
@@ -511,34 +511,34 @@ code sections."
   (doxymacs-font-lock)
   (setq doxymacs-doxygen-style "JavaDoc")
   (setq doxymacs-file-comment-template
-	("/**" > n
-	 " * " (doxymacs-doxygen-command-char) "file   " (if (buffer-file-name) (file-name-nondirectory (buffer-file-name)) "") > n
-	 " *" > n
-	 " * " (doxymacs-doxygen-command-char) "author " (user-full-name) (doxymacs-user-mail-address) > n
-	 " *" > n
-	 " * " (doxymacs-doxygen-command-char) "date   " (current-time-string) > n
-	 " *" > n
-	 " * " (doxymacs-doxygen-command-char) "brief  " (p "Brief description of this file: ") > n
-	 " *" > n
-	 " * " (doxymacs-doxygen-command-char) "section LICENSE" > n
-	 " *" > n
-	 " * Copyright (©) 2010-2011 EPFL (Ecole Polytechnique Fédérale de Lausanne)" > n
-	 " * Laboratory (LSMS - Laboratoire de Simulation en Mécanique des Solides)" > n " *" > n
-	 " * Akantu is free  software: you can redistribute it and/or  modify it under the" > n
-	 " * terms  of the  GNU Lesser  General Public  License as  published by  the Free" > n
-	 " * Software Foundation, either version 3 of the License, or (at your option) any" > n
-	 " * later version." > n
-	 " *" > n
-	 " * Akantu is  distributed in the  hope that it  will be useful, but  WITHOUT ANY" > n
-	 " * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR" > n
-	 " * A  PARTICULAR PURPOSE. See  the GNU  Lesser General  Public License  for more" > n
-	 " * details." > n
-	 " *" > n
-	 " * You should  have received  a copy  of the GNU  Lesser General  Public License" > n
-	 " * along with Akantu. If not, see <http://www.gnu.org/licenses/>." > n
-	 " *" > n
-	 " */" > n > n
-	 "/* -------------------------------------------------------------------------- */" > n))
+        ("/**" > n
+         " * " (doxymacs-doxygen-command-char) "file   " (if (buffer-file-name) (file-name-nondirectory (buffer-file-name)) "") > n
+         " *" > n
+         " * " (doxymacs-doxygen-command-char) "author " (user-full-name) (doxymacs-user-mail-address) > n
+         " *" > n
+         " * " (doxymacs-doxygen-command-char) "date   " (current-time-string) > n
+         " *" > n
+         " * " (doxymacs-doxygen-command-char) "brief  " (p "Brief description of this file: ") > n
+         " *" > n
+         " * " (doxymacs-doxygen-command-char) "section LICENSE" > n
+         " *" > n
+         " * Copyright (©) 2010-2011 EPFL (Ecole Polytechnique Fédérale de Lausanne)" > n
+         " * Laboratory (LSMS - Laboratoire de Simulation en Mécanique des Solides)" > n " *" > n
+         " * Akantu is free  software: you can redistribute it and/or  modify it under the" > n
+         " * terms  of the  GNU Lesser  General Public  License as  published by  the Free" > n
+         " * Software Foundation, either version 3 of the License, or (at your option) any" > n
+         " * later version." > n
+         " *" > n
+         " * Akantu is  distributed in the  hope that it  will be useful, but  WITHOUT ANY" > n
+         " * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR" > n
+         " * A  PARTICULAR PURPOSE. See  the GNU  Lesser General  Public License  for more" > n
+         " * details." > n
+         " *" > n
+         " * You should  have received  a copy  of the GNU  Lesser General  Public License" > n
+         " * along with Akantu. If not, see <http://www.gnu.org/licenses/>." > n
+         " *" > n
+         " */" > n > n
+         "/* -------------------------------------------------------------------------- */" > n))
   )
 
 (use-package doxymacs
@@ -844,17 +844,12 @@ Otherwise call `ediff-buffers' interactively."
   ;; don't set jenkins-api-token here - do it in custom.el so it is not checked
   ;; into git
   :config (setq jenkins-hostname "http://scitasadm.epfl.ch/jenkins/"
-                jenkins-username "richart"
-                jenkins-viewname "netWorms"))
+                jenkins-username 'user-login-name))
 
 (use-package magit
   :ensure t
   :defer t
   :bind ("C-x g" . magit-status))
-
-(use-package mail-mode
-  :mode "/tmp/richart/mutt.*"
-  )
 
 (use-package markdown-mode
   :ensure t
