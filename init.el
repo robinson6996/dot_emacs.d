@@ -99,6 +99,14 @@
 ;; Prefer space over tab
 (setq indent-tabs-mode nil)
 
+;; Moves backup files in a different folder
+(defvar emacs-backup-directory
+  (concat user-emacs-directory "backups/")
+  "This variable dictates where to put backups.")
+
+(setq backup-directory-alist
+      `((".*" . ,emacs-backup-directory)))
+
 ;;; --- Global Shortcuts -------------------------------------------------------
 (global-set-key "\C-c\;" 'comment-region)
 (global-set-key "\M-g" 'goto-line)
@@ -217,6 +225,12 @@
   :mode "\\.dat\\'"
   )
 
+(use-package anaconda-mode
+  :ensure t
+  :diminish (anaconda-mode . " 🐍 ")
+  ;; enable with apm-python-mode-setup below
+  :defer t)
+
 (use-package ansi-color
   ;; show colours correctly in shell
   :config (ansi-color-for-comint-mode-on))
@@ -326,6 +340,12 @@ code sections."
   (setq clang-format-executable "clang-format-3.9")
   )
 
+(use-package cmake-mode
+  :ensure t)
+
+(use-package cmake-font-lock
+  :ensure t)
+
 (use-package company
   :ensure t
   :commands global-company-mode
@@ -357,6 +377,12 @@ code sections."
             ;; put most often used completions at stop of list
             (setq company-transformers '(company-sort-by-occurrence))))
 
+(use-package company-anaconda
+  :ensure t
+  :commands (company-anaconda)
+  :after company
+  :init (add-to-list 'company-backends #'company-anaconda))
+
 (use-package company-auctex
   :ensure t
   ;; loaded in apm-latex-mode-setup
@@ -386,6 +412,11 @@ code sections."
                     (executable-find "clang++")))
           ;; group with company-irony but beforehand so we get first pick
           (add-to-list 'company-backends '(company-irony-c-headers company-irony))))
+
+(use-package company-jedi
+  :ensure t
+  :after company
+  :init (add-to-list 'company-backends 'company-jedi))
 
 (use-package company-emoji
   :ensure t
@@ -543,9 +574,10 @@ code sections."
 
 (use-package doxymacs
   :defer t
+  :load-path "vendor/doxymacs"
   :commands (doxymacs-mode doxymacs-font-lock)
   :diminish doxymacs-mode
-  :config (add-hook 'c-mode-common-hook #'apm-doxymacs-setup)  
+  :config (add-hook 'cc-mode-common-hook #'apm-doxymacs-setup)
   )
 
 (use-package dracula-theme
@@ -595,6 +627,10 @@ Otherwise call `ediff-buffers' interactively."
   :defer t
   :config (setq ediff-window-setup-function 'ediff-setup-windows-plain
                 ediff-split-window-function 'split-window-horizontally))
+
+(use-package ein
+  :ensure t
+  )
 
 (use-package eldoc
   :diminish eldoc-mode
@@ -830,7 +866,7 @@ Otherwise call `ediff-buffers' interactively."
   :defer t
   :init (progn
           ;; use gdb-many-windows by default
-          (setq gdb-many-windows t)
+          (setq gdb-many-windows nil)
           ;; Non-nil means display source file containing the main routine at startup
           (setq gdb-show-main t)))
 
@@ -845,6 +881,36 @@ Otherwise call `ediff-buffers' interactively."
   ;; into git
   :config (setq jenkins-hostname "http://scitasadm.epfl.ch/jenkins/"
                 jenkins-username 'user-login-name))
+
+(defun apm-js2-mode-setup ()
+  "Setup js2-mode."
+  (setq mode-name "js2"))
+
+(use-package js2-mode
+  :ensure t
+  :defer t
+  :init (progn
+          (setq-default js2-basic-offset 2)
+          (add-hook 'js2-mode-hook 'apm-js2-mode-setup)))
+
+(defun apm-emacs-lisp-mode-setup ()
+  "Setup Emacs Lisp mode."
+  (setq mode-name "el")
+  ;; use aggressive indent
+  (aggressive-indent-mode 1)
+  (fic-mode 1)
+  ;; make imenu list each package for easy navigation - from
+  ;; https://github.com/jwiegley/use-package/issues/80#issuecomment-46687774
+  (when (string= buffer-file-name (expand-file-name "init.el" "~/dot_emacs.d"))
+    (add-to-list
+     'imenu-generic-expression
+     '("Packages" "^\\s-*(\\(use-package\\)\\s-+\\(\\(\\sw\\|\\s_\\)+\\)" 2)))
+  ;; use smartparens in strict mode for lisp
+  (with-eval-after-load 'smartparens
+    (smartparens-strict-mode 1)))
+
+(use-package lisp-mode
+  :config (add-hook 'emacs-lisp-mode-hook #'apm-emacs-lisp-mode-setup))
 
 (use-package magit
   :ensure t
@@ -928,7 +994,9 @@ Otherwise call `ediff-buffers' interactively."
 
 (defun apm-python-mode-setup ()
   "Tweaks and customisations for `python-mode'."
-  (setq python-indent-offset 4))
+  (setq python-indent-offset 4)
+  (anaconda-mode 1)
+  (anaconda-eldoc-mode 1))
 
 (use-package python
   :defer t
