@@ -1,7 +1,6 @@
 ;;; init.el --- Starting point for Alex Murray's Emacs Configuration
 
 ;;; Commentary:
-;;
 
 ;;; Code:
 
@@ -56,7 +55,7 @@
                         #'(lambda (word) (capitalize (downcase word)))
                         (split-string s (if delim delim "_"))) ""))
 
-(when (version< emacs-version "24.0")
+(when (version< emacs-version "24.4")
   (alert "Emacs version too old - please run 24 or newer"
          :severity 'high))
 
@@ -636,6 +635,10 @@ Otherwise call `ediff-buffers' interactively."
   :diminish eldoc-mode
   :config (global-eldoc-mode 1))
 
+(use-package elpy
+  :ensure t
+  :config (elpy-enable))
+
 (defun apm-erc-alert (&optional match-type nick message)
   "Show an alert when nick mentioned with MATCH-TYPE NICK and MESSAGE."
   (if (or (null match-type) (not (eq match-type 'fool)))
@@ -647,7 +650,7 @@ Otherwise call `ediff-buffers' interactively."
 (use-package erc
   :defer t
   :config (progn
-            (setq erc-nick "alexmurray")
+            (setq erc-nick "networms")
             ;; notify via alert when mentioned
             (add-hook 'erc-text-matched-hook 'apm-erc-alert)))
 
@@ -783,15 +786,15 @@ Otherwise call `ediff-buffers' interactively."
 (use-package fuzzy
   :ensure t)
 
-(use-package git-gutter+
-  :ensure t
-  :diminish git-gutter+-mode
-  :init
-  (add-hook 'c-mode-common-hook 'git-gutter+-mode)
-  (add-hook 'cmake-mode-hook 'git-gutter+-mode)
-  (add-hook 'python-mode-hook 'git-gutter+-mode)
-  (add-hook 'LaTeX-mode-hook 'git-gutter+-mode)
-  )
+;;(use-package git-gutter+
+;;  :ensure t
+;;  :diminish git-gutter+-mode
+;;  :init
+;;  (add-hook 'c-mode-common-hook 'git-gutter+-mode)
+;;  (add-hook 'cmake-mode-hook 'git-gutter+-mode)
+;;  (add-hook 'python-mode-hook 'git-gutter+-mode)
+;;  (add-hook 'LaTeX-mode-hook 'git-gutter+-mode)
+;;  )
 
 (use-package gitconfig-mode
   :ensure t
