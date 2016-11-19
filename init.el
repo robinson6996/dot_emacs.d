@@ -448,6 +448,11 @@ code sections."
   :after company
   :config (company-statistics-mode 1))
 
+(use-package company-tern
+  :ensure t
+  :after company
+  :init (add-to-list 'company-backends 'company-tern))
+
 (use-package company-try-hard
   :ensure t
   :after company
@@ -885,16 +890,16 @@ Otherwise call `ediff-buffers' interactively."
   :config (setq jenkins-hostname "http://scitasadm.epfl.ch/jenkins/"
                 jenkins-username 'user-login-name))
 
-(defun apm-js2-mode-setup ()
-  "Setup js2-mode."
-  (setq mode-name "js2"))
-
-(use-package js2-mode
+(use-package js3-mode
   :ensure t
   :defer t
+  :mode ("\\.js\\'" . js3-mode)
   :init (progn
-          (setq-default js2-basic-offset 2)
-          (add-hook 'js2-mode-hook 'apm-js2-mode-setup)))
+          (add-hook 'js3-mode-hook
+                    (lambda ()
+                      (setq mode-name "js3"))))
+  :config
+  (setq js3-consistent-level-indent-inner-bracket t)))
 
 (defun apm-emacs-lisp-mode-setup ()
   "Setup Emacs Lisp mode."
@@ -1055,6 +1060,10 @@ Otherwise call `ediff-buffers' interactively."
   :config (tracwiki-define-project
            "akantu"
            "https://lsmssrv1.epfl.ch/akantu-trac"))
+
+(use-package tern
+  :ensure t
+  :config (add-hook 'js3-mode-hook (lambda () (tern-mode t))))
 
 (use-package unicode-fonts
   :ensure t
