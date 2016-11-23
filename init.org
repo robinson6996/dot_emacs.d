@@ -1,9 +1,3 @@
-#+TITLE .emacs.d Configuration
-#+AUTHOR Nicolas Richart
-#+BABEL: :cache yes
-#+LATEX_HEADER: \usepackage{parskip}
-#+LATEX_HEADER: \usepackage{inconsolata}
-#+LATEX_HEADER: \usepackage[utf8]{inputenc}
 #+PROPERTY: header-args :tangle yes
 
 This is my emacs config that is made of a melting pot of multiple sources.
@@ -317,6 +311,10 @@ This is my emacs config that is made of a melting pot of multiple sources.
   (add-hook 'text-mode-hook #'apm-text-mode-setup)
    #+END_SRC
 
+
+* License
+  The code I used for this configuration are under "Public License" or "GPLv3". This file is under "GPLv3" to be compatible with the strictest.
+
 * List of packages to install and use
    #+BEGIN_QUOTE
   - [[Interface Enhancement]]
@@ -345,30 +343,10 @@ This is my emacs config that is made of a melting pot of multiple sources.
     - [[#latex][LaTeX]]
     - [[#pdf][PDF]]
   - [[#internet][Internet]]
-    - [[#mail][Mail]]
     - [[#irc][IRC]]
-    - [[#social-network][Social Network]]
-    - [[#web-feed][Web Feed]]
-  - [[#devops][DevOps]]
   - [[#package-management][Package Management]]
-    - [[#package-manager][Package Manager]]
-    - [[#package-configuration][Package Configuration]]
-    - [[#package-updates][Package Updates]]
-  - [[#library][Library]]
   - [[#appearance][Appearance]]
-  - [[#theme][Theme]]
-  - [[#multimedia][Multimedia]]
-  - [[#fun][Fun]]
-  - [[#starter-kit][Starter Kit]]
-  - [[#noteworthy-configurations][Noteworthy Configurations]]
-  - [[#tutorials][Tutorials]]
-  - [[#links-and-resources][Links and resources]]
-- [[#contributing][Contributing]]
-  - [[#the-order-of-items][The Order of Items]]
-  - [[#emacs-built-in-packages][Emacs Built-In Packages]]
-  - [[#generate-table-of-contents][Generate "Table of Contents"]]
-- [[#other-awesome-lists][Other Awesome Lists]]
-- [[#license][License]]
+    - [[#theme][Theme]]
    #+END_QUOTE
 
 ** Interface Enhancement
