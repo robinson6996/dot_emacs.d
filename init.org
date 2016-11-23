@@ -937,7 +937,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
 #+BEGIN_SRC emacs-lisp
 (defun apm-emacs-lisp-mode-setup ()
   "Setup Emacs Lisp mode."
-  (setq mode-name "el")
+  (setq mode-name "🐮")
   ;; use aggressive indent
   (aggressive-indent-mode 1)
   (fic-mode 1)
@@ -1305,14 +1305,14 @@ This is my emacs config that is made of a melting pot of multiple sources.
      (defun apm-ediff-dwim ()
        "Do ediff as I mean.
 
-     If a region is active when command is called, call `ediff-regions-wordwise'.
+          If a region is active when command is called, call `ediff-regions-wordwise'.
 
-     Else if the current frame has 2 windows,
-     - Do `ediff-files' if the buffers are associated to files and the buffers
-       have not been modified.
-     - Do `ediff-buffers' otherwise.
+          Else if the current frame has 2 windows,
+          - Do `ediff-files' if the buffers are associated to files and the buffers
+            have not been modified.
+          - Do `ediff-buffers' otherwise.
 
-     Otherwise call `ediff-buffers' interactively."
+          Otherwise call `ediff-buffers' interactively."
        (interactive)
        (if (region-active-p)
            (call-interactively 'ediff-regions-wordwise)
@@ -1377,6 +1377,24 @@ This is my emacs config that is made of a melting pot of multiple sources.
      (use-package fic-mode
        :ensure t
        :defer t)
+
+     (use-package fill-column-indicator
+       :ensure t
+       :config (progn
+                 (define-global-minor-mode global-fci-mode fci-mode
+                   ;; only enable when buffer is not a special buffer (starts and
+                   ;; ends with an asterisk)
+                   (lambda () (if (not (string-match "^\*.*\*$" (buffer-name)))
+                             (fci-mode 1))))
+                 (global-fci-mode 1)
+                 ;; make fci play nicely with company-mode - from https://github.com/alpaker/Fill-Column-Indicator/issues/54#issuecomment-218344694
+                 (with-eval-after-load 'company
+                   (defun on-off-fci-before-company(command)
+                     (when (string= "show" command)
+                       (turn-off-fci-mode))
+                     (when (string= "hide" command)
+                       (turn-on-fci-mode)))
+                   (advice-add 'company-call-frontends :before #'on-off-fci-before-company))))
 
      (use-package files
        :bind ("C-c r" . revert-buffer))
