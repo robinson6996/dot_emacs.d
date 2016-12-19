@@ -160,155 +160,159 @@ This is my emacs config that is made of a melting pot of multiple sources.
    This part contain the general configuration of the built-in parts of Emacs
 
    #+BEGIN_SRC emacs-lisp
-  ;; For css-mode, temporarily.
-  (defalias 'apropos-macrop 'macrop)
+     ;; For css-mode, temporarily.
+     (defalias 'apropos-macrop 'macrop)
 
-  ;; To be able to load the .dir-locals.el files
-  (setq enable-local-variables :safe)
+     ;; To be able to load the .dir-locals.el files
+     (setq enable-local-variables :safe)
 
-  ;; gpg preferences
-  (setq epa-armor t)
-  (setq epg-gpg-program "gpg2")
+     ;; gpg preferences
+     (setq epa-armor t)
+     (setq epg-gpg-program "gpg2")
 
-  ;; automatically garbage collect when switch away from emacs
-  (add-hook 'focus-out-hook 'garbage-collect)
+     ;; automatically garbage collect when switch away from emacs
+     (add-hook 'focus-out-hook 'garbage-collect)
 
-  ;; enable narrow-to-region
-  (put 'narrow-to-region 'disabled nil)
+     ;; enable narrow-to-region
+     (put 'narrow-to-region 'disabled nil)
 
-  ;; set a reasonable fill and comment column
-  (setq-default fill-column 80)
-  (setq-default comment-column 78)
+     ;; set a reasonable fill and comment column
+     (setq-default fill-column 79)
+     (setq-default comment-column 78)
 
-  ;; just use y or n not yes or no
-  (defalias 'yes-or-no-p 'y-or-n-p)
+     ;; just use y or n not yes or no
+     (defalias 'yes-or-no-p 'y-or-n-p)
 
-  ;; inhibit startup message and splash screen
-  (setq inhibit-startup-message t)
-  ;; remove message from initial scratch buffer
-  (setq initial-scratch-message nil)
+     ;; inhibit startup message and splash screen
+     (setq inhibit-startup-message t)
+     ;; remove message from initial scratch buffer
+     (setq initial-scratch-message nil)
 
-  ;; Make Tab complete if the line is indented
-  (setq tab-always-indent 'complete)
+     ;; Make Tab complete if the line is indented
+     (setq tab-always-indent 'complete)
 
-  ;; disable menu, tool and scroll-bars, show time
-  (menu-bar-mode 0)
-  (tool-bar-mode 0)
-  (scroll-bar-mode 0)
-  (when (fboundp 'horizontal-scroll-bar-mode)
-    (horizontal-scroll-bar-mode 0))
-  (display-time-mode 1)
-  ;; Show line column numbers in mode line
-  (line-number-mode 1)
-  (column-number-mode 1)
-  ;; Parent highlight
-  (show-paren-mode 1)
+     ;; disable menu, tool and scroll-bars, show time
+     (menu-bar-mode 0)
+     (tool-bar-mode 0)
+     (scroll-bar-mode 0)
+     (when (fboundp 'horizontal-scroll-bar-mode)
+       (horizontal-scroll-bar-mode 0))
+     (display-time-mode 1)
+     ;; Show line column numbers in mode line
+     (line-number-mode 1)
+     (column-number-mode 1)
+     ;; Parent highlight
+     (show-paren-mode 1)
 
-  ;; Prefer space over tab
-  (setq indent-tabs-mode nil)
+     ;; Prefer space over tab
+     (setq indent-tabs-mode nil)
 
-  ;; Moves backup files in a different folder
-  (defvar emacs-backup-directory
-    (concat user-emacs-directory "backups/")
-    "This variable dictates where to put backups.")
+     ;; Moves backup files in a different folder
+     (defvar emacs-backup-directory
+       (concat user-emacs-directory "backups/")
+       "This variable dictates where to put backups.")
 
-  (setq backup-directory-alist
-        `((".*" . ,emacs-backup-directory)))
+     (setq backup-directory-alist
+           `((".*" . ,emacs-backup-directory)))
 
-  ;; prompt when trying to switch out of a dedicated window
-  (setq switch-to-buffer-in-dedicated-window 'prompt)
+     ;; prompt when trying to switch out of a dedicated window
+     (setq switch-to-buffer-in-dedicated-window 'prompt)
 
-  ;; ensure scrolling forwards / backwards preserves original location such that
-  ;; they undo each other
-  (setq scroll-preserve-screen-position 'always)
+     ;; ensure scrolling forwards / backwards preserves original location such that
+     ;; they undo each other
+     (setq scroll-preserve-screen-position 'always)
 
-  (defun apm-emoji-fontset-init ()
-    "Set fontset to display emoji correctly."
-    (if (eq system-type 'darwin)
-        ;; For NS/Cocoa
-        (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji") nil 'prepend)
-      ;; For Linux
-      (if (font-info "Symbola")
-          (set-fontset-font t 'symbol (font-spec :family "Symbola") nil 'prepend)
-        (alert "Symbola is not installed (ttf-ancient-fonts)"))))
+     (defun apm-emoji-fontset-init ()
+       "Set fontset to display emoji correctly."
+       (if (eq system-type 'darwin)
+           ;; For NS/Cocoa
+           (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji") nil 'prepend)
+         ;; For Linux
+         (if (font-info "Symbola")
+             (set-fontset-font t 'symbol (font-spec :family "Symbola") nil 'prepend)
+           (alert "Symbola is not installed (ttf-ancient-fonts)"))))
 
-  (defvar apm-preferred-font-family "Inconsolata"
-    "Preferred font family to use.")
+     (defvar apm-preferred-font-family "Inconsolata"
+       "Preferred font family to use.")
 
-  (defvar apm-preferred-font-family-package "fonts-inconsolata"
-    "Package to install to get `apm-preferred-font-family'.")
+     (defvar apm-preferred-font-family-package "fonts-inconsolata"
+       "Package to install to get `apm-preferred-font-family'.")
 
-  (defvar apm-preferred-font-height 100
-    "Preferred font height to use.")
+     (defvar apm-preferred-font-height 100
+       "Preferred font height to use.")
 
-  (defun apm-graphic-frame-init ()
-    "Initialise properties specific to graphical display."
-    (interactive)
-    (when (display-graphic-p)
-      (apm-emoji-fontset-init)
-      (setq frame-title-format '(buffer-file-name "%f" ("%b")))
-      ;; don't use gtk style tooltips so instead can use pos-tip etc
-      (custom-set-variables
-       '(x-gtk-use-system-tooltips nil))
-      (tooltip-mode -1)
-      (blink-cursor-mode -1)
-      (if (font-info apm-preferred-font-family)
-          (set-face-attribute 'default nil
-                              :family apm-preferred-font-family
-                              :height apm-preferred-font-height)
-        (alert (format "%s font not installed (%s)"
-                       apm-preferred-font-family
-                       apm-preferred-font-family-package)))
-      (if (font-info "FontAwesome")
-          ;; make sure to use FontAwesome for it's range in the unicode
-          ;; private use area since on Windows this doesn't happen
-          ;; automagically
-          (set-fontset-font "fontset-default" '(#xf000 . #xf23a) "FontAwesome")
-        (alert "FontAwesome is not installed (fonts-font-awesome)."))))
+     (defun apm-graphic-frame-init ()
+       "Initialise properties specific to graphical display."
+       (interactive)
+       (when (display-graphic-p)
+         (apm-emoji-fontset-init)
+         (setq frame-title-format '(buffer-file-name "%f" ("%b")))
+         ;; don't use gtk style tooltips so instead can use pos-tip etc
+         (custom-set-variables
+          '(x-gtk-use-system-tooltips nil))
+         (tooltip-mode -1)
+         (blink-cursor-mode -1)
+         (if (font-info apm-preferred-font-family)
+             (set-face-attribute 'default nil
+                                 :family apm-preferred-font-family
+                                 :height apm-preferred-font-height)
+           (alert (format "%s font not installed (%s)"
+                          apm-preferred-font-family
+                          apm-preferred-font-family-package)))
+         (if (font-info "FontAwesome")
+             ;; make sure to use FontAwesome for it's range in the unicode
+             ;; private use area since on Windows this doesn't happen
+             ;; automagically
+             (set-fontset-font "fontset-default" '(#xf000 . #xf23a) "FontAwesome")
+           (alert "FontAwesome is not installed (fonts-font-awesome)."))))
 
-  ;; make sure graphical properties get set on client frames
-  (add-hook 'server-visit-hook #'apm-graphic-frame-init)
-  (apm-graphic-frame-init)
+     ;; make sure graphical properties get set on client frames
+     (add-hook 'server-visit-hook #'apm-graphic-frame-init)
+     (apm-graphic-frame-init)
 
-  ;; Use regex searches and replace by default.
-  (global-set-key (kbd "C-s") 'isearch-forward-regexp)
-  (global-set-key (kbd "C-r") 'isearch-backward-regexp)
-  (global-set-key (kbd "M-%") 'query-replace-regexp)
-  (global-set-key (kbd "C-M-s") 'isearch-forward)
-  (global-set-key (kbd "C-M-r") 'isearch-backward)
-  (global-set-key (kbd "C-M-%") 'query-replace)
+     ;; Use regex searches and replace by default.
+     (global-set-key (kbd "C-s") 'isearch-forward-regexp)
+     (global-set-key (kbd "C-r") 'isearch-backward-regexp)
+     (global-set-key (kbd "M-%") 'query-replace-regexp)
+     (global-set-key (kbd "C-M-s") 'isearch-forward)
+     (global-set-key (kbd "C-M-r") 'isearch-backward)
+     (global-set-key (kbd "C-M-%") 'query-replace)
 
-  ;; Some global key binding
-  (global-set-key (kbd "C-c ;") 'comment-region)
-  (global-set-key (kbd "M-g") 'goto-line)
-  (global-set-key [f8] 'grep-find)
+     ;; Some global key binding
+     (global-set-key (kbd "C-c ;") 'comment-region)
+     (global-set-key (kbd "M-g") 'goto-line)
+     (global-set-key [f8] 'grep-find)
 
-  ;; from http://endlessparentheses.com/fill-and-unfill-paragraphs-with-a-single-key.html
-  (defun endless/fill-or-unfill ()
-    "Like `fill-paragraph', but unfill if used twice."
-    (interactive)
-    (let ((fill-column
-           (if (eq last-command 'endless/fill-or-unfill)
-               (progn (setq this-command nil)
-                      (point-max))
-             fill-column)))
-      (call-interactively #'fill-paragraph)))
+     ;; from http://endlessparentheses.com/fill-and-unfill-paragraphs-with-a-single-key.html
+     (defun endless/fill-or-unfill ()
+       "Like `fill-paragraph', but unfill if used twice."
+       (interactive)
+       (let ((fill-column
+              (if (eq last-command 'endless/fill-or-unfill)
+                  (progn (setq this-command nil)
+                         (point-max))
+                fill-column)))
+         (call-interactively #'fill-paragraph)))
 
-  (global-set-key [remap fill-paragraph] #'endless/fill-or-unfill)
+     (global-set-key [remap fill-paragraph] #'endless/fill-or-unfill)
 
-  ;; general modes in text-mode or derived from
-  (defun apm-text-mode-setup ()
-    "Setup `text-mode' buffers."
-    ;; use visual line mode to do soft word wrapping
-    (visual-line-mode 1)
-    ;; and use adaptive-wrap to 'indent' paragraphs appropriately with visual-line-mode
-    (adaptive-wrap-prefix-mode 1)
-    ;; Enable flyspell
-    (flyspell-mode 1)
-    ;; give warning if words misspelled when typing
-    (ispell-minor-mode 1))
+     ;; general modes in text-mode or derived from
+     (defun apm-text-mode-setup ()
+       "Setup `text-mode' buffers."
+       ;; use visual line mode to do soft word wrapping
+       (visual-line-mode 1)
 
-  (add-hook 'text-mode-hook #'apm-text-mode-setup)
+       (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+       
+       (visual-fill-column-mode 1)
+       ;; and use adaptive-wrap to 'indent' paragraphs appropriately with visual-line-mode
+       (adaptive-wrap-prefix-mode 1) 
+       ;; Enable flyspell
+       (flyspell-mode 1)
+       ;; give warning if words misspelled when typing
+       (ispell-minor-mode 1))
+
+     (add-hook 'text-mode-hook #'apm-text-mode-setup)
    #+END_SRC
 
 
@@ -481,54 +485,58 @@ This is my emacs config that is made of a melting pot of multiple sources.
    - [[https://www.emacswiki.org/emacs/CompileCommand][compile]] - =[built-in]= Compile command default for =M-x compile=
    - [[http://doxymacs.sourceforge.net/][Doxymacs]] - Doxymacs is Doxygen + {X}Emacs.
    - [[https://www.emacswiki.org/emacs/ProgMode][prog-mode]] - =[built-in]= common to all programming modes
+   - [[https://github.com/realgud/realgud][realgud]] - front-end to external debuggers
 #   - [[https://github.com/purcell/whitespace-cleanup-mode][whitespace-cleanup-mode]] - Intelligently call whitespace-cleanup on save.
    - [[https://github.com/capitaomorte/yasnippet][YASnippets]] - Template system.
 
 #+BEGIN_SRC emacs-lisp
-(use-package aggressive-indent
-  :ensure t
-  :defer t
-  :diminish aggressive-indent-mode
-  :config (aggressive-indent-global-mode t))
+  (use-package aggressive-indent
+    :ensure t
+    :defer t
+    :diminish aggressive-indent-mode
+    :config (aggressive-indent-global-mode t))
 
-(use-package compile
-  :bind ([f9] . compile)
-  ;; automatically scroll to first error on output
-  :config (setq compilation-scroll-output 'first-error))
+  (use-package compile
+    :bind ([f9] . compile)
+    ;; automatically scroll to first error on output
+    :config (setq compilation-scroll-output 'first-error))
 
-(defun apm-doxymacs-setup()
-  (doxymacs-mode)
-  (doxymacs-font-lock)
-  (setq doxymacs-doxygen-style "JavaDoc"))
+  (defun apm-doxymacs-setup()
+    (doxymacs-mode)
+    (doxymacs-font-lock)
+    (setq doxymacs-doxygen-style "JavaDoc"))
 
-(use-package doxymacs
-  :defer t
-  :load-path "vendor/doxymacs"
-  :commands (doxymacs-mode doxymacs-font-lock)
-  :diminish doxymacs-mode
-  :config (add-hook 'cc-mode-common-hook #'apm-doxymacs-setup)
-  )
+  (use-package doxymacs
+    :defer t
+    :load-path "vendor/doxymacs"
+    :commands (doxymacs-mode doxymacs-font-lock)
+    :diminish doxymacs-mode
+    :config (add-hook 'cc-mode-common-hook #'apm-doxymacs-setup)
+    )
 
-(defun apm-prog-mode-setup ()
-  "Tweaks and customisations for all programming modes."
-  ;; turn on spell checking for strings and comments
-  (flyspell-prog-mode)
-  ;; highlight TODO etc in comments only
-  (fic-mode 1))
+  (defun apm-prog-mode-setup ()
+    "Tweaks and customisations for all programming modes."
+    ;; turn on spell checking for strings and comments
+    (flyspell-prog-mode)
+    ;; highlight TODO etc in comments only
+    (fic-mode 1))
 
-(use-package prog-mode
-  :config (progn
-            (when (boundp 'prettify-symbols-unprettify-at-point)
-              ;; show original text when point is over a prettified symbol
-              (setq prettify-symbols-unprettify-at-point 'right-edge))
-            ;; prettify symbols (turn lambda -> λ)
-            (global-prettify-symbols-mode 1)
-            (add-hook 'prog-mode-hook #'apm-prog-mode-setup)))
+  (use-package prog-mode
+    :config (progn
+              (when (boundp 'prettify-symbols-unprettify-at-point)
+                ;; show original text when point is over a prettified symbol
+                (setq prettify-symbols-unprettify-at-point 'right-edge))
+              ;; prettify symbols (turn lambda -> λ)
+              (global-prettify-symbols-mode 1)
+              (add-hook 'prog-mode-hook #'apm-prog-mode-setup)))
 
-(use-package yasnippet
-  :ensure t
-  :diminish yas-minor-mode
-  :config (yas-global-mode 1))
+  (use-package realgud
+    :ensure t)
+
+  (use-package yasnippet
+    :ensure t
+    :diminish yas-minor-mode
+    :config (yas-global-mode 1))
 
 #+END_SRC
 
@@ -807,7 +815,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
     (with-eval-after-load 'diminish
       (diminish 'auto-fill-function))
     ;; turn on auto-newline and hungry-delete
-    (c-toggle-auto-hungry-state t)
+    ;; (c-toggle-auto-hungry-state t)
     ;; ensure fill-paragraph takes doxygen @ markers as start of new
     ;; paragraphs properly
     (setq paragraph-start "^[ ]*\\(//+\\|\\**\\)[ ]*\\([ ]*$\\|@param\\)\\|^\f")
@@ -895,6 +903,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
     - [[https://github.com/jorgenschaefer/elpy][Elpy]] - An Emacs Python development environment.
     - [[https://github.com/tkf/emacs-jedi][Jedi]] - A Python auto-completion package.
     - [[https://github.com/dholm/swig-mode][swig]] - Major mode for swig files
+    - yaml - Major mode for editing YAML files
 #    - [[https://github.com/porterjamesj/virtualenvwrapper.el][virtualenvwrapper.el]] - Manage virtualenv from inside Emacs.
 
 #+BEGIN_SRC emacs-lisp
@@ -908,15 +917,17 @@ This is my emacs config that is made of a melting pot of multiple sources.
     :ensure t
     :config (add-hook 'ein:connect-mode-hook 'ein:jedi-setup))
 
-  (use-package elpy
-    :ensure t
-    :config (elpy-enable))
+                                          ;  (use-package elpy
+                                          ;    :ensure t
+                                          ;    :config (elpy-enable))
 
   (use-package jedi
     :ensure t)
 
   (defun apm-python-mode-setup ()
     "Tweaks and customisations for `python-mode'."
+    (setq python-shell-interpreter "ipython3"
+          python-shell-interpreter-args "-i")
     (setq python-indent-offset 4)
     (add-to-list 'company-backends 'company-jedi)
     (anaconda-mode 1)
@@ -929,6 +940,10 @@ This is my emacs config that is made of a melting pot of multiple sources.
   (use-package swig-mode
     :load-path "vendor/"
     :mode "\\.i\\'"
+    )
+
+  (use-package yaml-mode
+    :ensure t
     )
 #+END_SRC
 
@@ -1039,25 +1054,29 @@ This is my emacs config that is made of a melting pot of multiple sources.
     - [[http://www.emacswiki.org/emacs/download/multi-term.el][multi-term]] - Managing multiple terminal buffers in Emacs.
 
 #+BEGIN_SRC emacs-lisp
-(use-package ansi-color
-  ;; show colours correctly in shell
-  :config (ansi-color-for-comint-mode-on))
+  (use-package ansi-color
+    ;; show colours correctly in shell
+    :config (ansi-color-for-comint-mode-on))
 
-(defun apm-eshell-mode-setup ()
-  "Initialise 'eshell-mode'."
-  (setq mode-name ""))
+  (defun apm-eshell-mode-setup ()
+    "Initialise 'eshell-mode'."
+    (setq mode-name ""))
 
-(use-package eshell
-  :commands eshell
-  :bind ("C-x m" . eshell)
-  :config (add-hook 'eshell-mode-hook #'apm-eshell-mode-setup))
+  (use-package eshell
+    :commands eshell
+    :config (add-hook 'eshell-mode-hook #'apm-eshell-mode-setup))
 
-(use-package multi-term
-  :ensure t
-  :init
-  (add-hook 'term-mode-hook
-            (lambda()
-              (setq show-trailing-whitespace nil))))
+  (defun netw-multiterm-mode-setup ()
+    "Initialize 'multiterm-mode"
+    (yas-minor-mode -1)
+    (setq mode-name "")
+    (setq show-trailing-whitespace nil))
+
+  (use-package multi-term
+    :ensure t
+    :bind ("C-x m" . multi-term)
+    :config
+    (add-hook 'term-mode-hook #'netw-multiterm-mode-setup))
 #+END_SRC
 
 *** Continuous Integration
@@ -1184,7 +1203,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
             (add-hook 'erc-text-matched-hook 'apm-erc-alert)))
 
 #+END_SRC
-
+    
 ** Package Management
     - [[http://www.emacswiki.org/emacs/ELPA][package.el]] - =[built-in]= Install and manage Emacs packages easily.
       - [[https://github.com/Malabarba/paradox][paradox]] - Modernizing Emacs' Package Menu with package ratings, usage statistics, customizability & more.
@@ -1223,7 +1242,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
    '(((buffer-modified buffer-size input-method) :face highlight-face)
      anzu
      '(buffer-id remote-host buffer-encoding-abbrev)
-     ((point-position line-column buffer-position) :separator " | ")
+     ((point-position line-column buffer-position hud) :separator " | ")
      major-mode
      process
      (flycheck-error flycheck-warning flycheck-info)
@@ -1249,9 +1268,10 @@ This is my emacs config that is made of a melting pot of multiple sources.
   :config (load-theme 'dracula t))
    #+END_SRC
 
-** Misc packages I did not hoe to classify
+** COMMENT Misc packages I did not know how to classify
    - [[http://elpa.gnu.org/packages/adaptive-wrap.html][adaptive-wrap]] - Smart line-wrapping with wrap-prefix
    - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Autorevert.html][autorevert]]
+   - [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] - Set the visual line mode to wrap at fill-column size
 
    #+BEGIN_SRC emacs-lisp
      (use-package adaptive-wrap
@@ -1305,14 +1325,14 @@ This is my emacs config that is made of a melting pot of multiple sources.
      (defun apm-ediff-dwim ()
        "Do ediff as I mean.
 
-          If a region is active when command is called, call `ediff-regions-wordwise'.
+               If a region is active when command is called, call `ediff-regions-wordwise'.
 
-          Else if the current frame has 2 windows,
-          - Do `ediff-files' if the buffers are associated to files and the buffers
-            have not been modified.
-          - Do `ediff-buffers' otherwise.
+               Else if the current frame has 2 windows,
+               - Do `ediff-files' if the buffers are associated to files and the buffers
+                 have not been modified.
+               - Do `ediff-buffers' otherwise.
 
-          Otherwise call `ediff-buffers' interactively."
+               Otherwise call `ediff-buffers' interactively."
        (interactive)
        (if (region-active-p)
            (call-interactively 'ediff-regions-wordwise)
@@ -1378,23 +1398,23 @@ This is my emacs config that is made of a melting pot of multiple sources.
        :ensure t
        :defer t)
 
-     (use-package fill-column-indicator
-       :ensure t
-       :config (progn
-                 (define-global-minor-mode global-fci-mode fci-mode
-                   ;; only enable when buffer is not a special buffer (starts and
-                   ;; ends with an asterisk)
-                   (lambda () (if (not (string-match "^\*.*\*$" (buffer-name)))
-                             (fci-mode 1))))
-                 (global-fci-mode 1)
-                 ;; make fci play nicely with company-mode - from https://github.com/alpaker/Fill-Column-Indicator/issues/54#issuecomment-218344694
-                 (with-eval-after-load 'company
-                   (defun on-off-fci-before-company(command)
-                     (when (string= "show" command)
-                       (turn-off-fci-mode))
-                     (when (string= "hide" command)
-                       (turn-on-fci-mode)))
-                   (advice-add 'company-call-frontends :before #'on-off-fci-before-company))))
+     ;; (use-package fill-column-indicator
+     ;;   :ensure t
+     ;;   :config (progn
+     ;;             (define-global-minor-mode global-fci-mode fci-mode
+     ;;               ;; only enable when buffer is not a special buffer (starts and
+     ;;               ;; ends with an asterisk)
+     ;;               (lambda () (if (not (string-match "^\*.*\*$" (buffer-name)))
+     ;;                         (fci-mode 1))))
+     ;;             (global-fci-mode 1)
+     ;;             ;; make fci play nicely with company-mode - from https://github.com/alpaker/Fill-Column-Indicator/issues/54#issuecomment-218344694
+     ;;             (with-eval-after-load 'company
+     ;;               (defun on-off-fci-before-company(command)
+     ;;                 (when (string= "show" command)
+     ;;                   (turn-off-fci-mode))
+     ;;                 (when (string= "hide" command)
+     ;;                   (turn-on-fci-mode)))
+     ;;               (advice-add 'company-call-frontends :before #'on-off-fci-before-company))))
 
      (use-package files
        :bind ("C-c r" . revert-buffer))
@@ -1450,14 +1470,16 @@ This is my emacs config that is made of a melting pot of multiple sources.
                      uniquify-after-kill-buffer-p t
                      uniquify-ignore-buffers-re "^\\*"))
 
+     (use-package visual-fill-column
+       :ensure t)
+
      (use-package web-beautify
        :ensure t
        )
-
-     (provide 'init)
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp exports: none
+     (provide 'init)
      ;;; init.el ends here
 
    #+END_SRC
