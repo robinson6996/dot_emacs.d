@@ -3,6 +3,7 @@
 ;;; Commentary:
 
 ;;; Code:
+
 (defconst akantu-input-regex-section-opening "^[ \t]*\\([_A-Za-z]+\\)[ \t]+\\([_A-Za-z][_A-Za-z0-9]+\\)\\([ \t]+[_A-Za-z][_A-Za-z0-9]*\\)?[ \t]*\\[\\(#.*\\)?$")
 (defconst akantu-input-regex-section-closing "^[ \t]*\\][ \t]*$")
 (defconst akantu-input-regex-multiline "^.*\\\\[ \t]*\\(#.*\\)?$")

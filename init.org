@@ -710,7 +710,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
 (use-package devhelp
   :load-path "vendor/"
   :defer t
-  :init (add-hook 'c-mode-hook #'apm-devhelp-setup))
+  :init (add-hook 'c++-mode-hook #'apm-devhelp-setup))
 #+END_SRC
 
 *** Error Checking
@@ -899,7 +899,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
 
 *** Python
     - [[https://github.com/proofit404/anaconda-mode][anaconda-mode]] - Code navigation, documentation lookup and completion for Python.
-    - [[http://millejoh.github.io/emacs-ipython-notebook/][ein]] - IPYthon client for Emacs
+    - [[http://millejoh.github.io/emacs-ipython-notebook/][ein]] - IPython notebook client for Emacs
     - [[https://github.com/jorgenschaefer/elpy][Elpy]] - An Emacs Python development environment.
     - [[https://github.com/tkf/emacs-jedi][Jedi]] - A Python auto-completion package.
     - [[https://github.com/dholm/swig-mode][swig]] - Major mode for swig files
@@ -927,7 +927,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
   (defun apm-python-mode-setup ()
     "Tweaks and customisations for `python-mode'."
     (setq python-shell-interpreter "ipython3"
-          python-shell-interpreter-args "-i")
+          python-shell-interpreter-args "--simple-prompt")
     (setq python-indent-offset 4)
     (add-to-list 'company-backends 'company-jedi)
     (anaconda-mode 1)
