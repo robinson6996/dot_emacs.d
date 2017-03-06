@@ -490,11 +490,11 @@ This is my emacs config that is made of a melting pot of multiple sources.
    - [[https://github.com/capitaomorte/yasnippet][YASnippets]] - Template system.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package aggressive-indent
-    :ensure t
-    :defer t
-    :diminish aggressive-indent-mode
-    :config (aggressive-indent-global-mode t))
+;  (use-package aggressive-indent
+;    :ensure t
+;    :defer t
+;    :diminish aggressive-indent-mode
+;    :config (aggressive-indent-global-mode t))
 
   (use-package compile
     :bind ([f9] . compile)
@@ -954,7 +954,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
   "Setup Emacs Lisp mode."
   (setq mode-name "🐮")
   ;; use aggressive indent
-  (aggressive-indent-mode 1)
+  ;; (aggressive-indent-mode 1)
   (fic-mode 1)
   ;; make imenu list each package for easy navigation - from
   ;; https://github.com/jwiegley/use-package/issues/80#issuecomment-46687774
@@ -1225,6 +1225,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
 
 *** Theme
    - [[https://draculatheme.com/emacs/][Dracula]] - /(dark)/ Dracula color theme
+   - [[https://github.com/m00natic/anti-zenburn-theme][Anti-Zenburn]] - /(light)/
 
    #+BEGIN_SRC emacs-lisp
 (use-package fancy-battery
@@ -1266,6 +1267,9 @@ This is my emacs config that is made of a melting pot of multiple sources.
 (use-package dracula-theme
   :ensure t
   :config (load-theme 'dracula t))
+
+(use-package anti-zenburn-theme
+  :ensure t)
    #+END_SRC
 
 ** COMMENT Misc packages I did not know how to classify
