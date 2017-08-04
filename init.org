@@ -246,6 +246,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
        (interactive)
        (when (display-graphic-p)
          (apm-emoji-fontset-init)
+         ;(spaceline-install t)
          (setq frame-title-format '(buffer-file-name "%f" ("%b")))
          ;; don't use gtk style tooltips so instead can use pos-tip etc
          (custom-set-variables
@@ -263,7 +264,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
              ;; make sure to use FontAwesome for it's range in the unicode
              ;; private use area since on Windows this doesn't happen
              ;; automagically
-             (set-fontset-font "fontset-default" '(#xf000 . #xf23a) "FontAwesome")
+             (set-fontset-font "fontset-default" '(#xf000 . #xf8ff) "FontAwesome")
            (alert "FontAwesome is not installed (fonts-font-awesome)."))))
 
      ;; make sure graphical properties get set on client frames
@@ -314,7 +315,6 @@ This is my emacs config that is made of a melting pot of multiple sources.
 
      (add-hook 'text-mode-hook #'apm-text-mode-setup)
    #+END_SRC
-
 
 * License
   The code I used for this configuration are under "Public License" or "GPLv3". This file is under "GPLv3" to be compatible with the strictest.
@@ -630,7 +630,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
   :after company
   :init (progn
           (setq company-irony-c-headers--compiler-executable
-                (or (executable-find "clang++-3.9")
+                (or (executable-find "clang++-5.0")
                     (executable-find "clang++")))
           ;; group with company-irony but beforehand so we get first pick
           (add-to-list 'company-backends '(company-irony-c-headers company-irony))))
@@ -723,42 +723,51 @@ This is my emacs config that is made of a melting pot of multiple sources.
       - [[https://github.com/flycheck/flycheck][flycheck-standard]] - =[flycheck-native]= checker for python using =standard.js=
 
 #+BEGIN_SRC emacs-lisp
-(use-package flycheck
-  :ensure t
-  :diminish flycheck-mode
-  :config (progn
-            (global-flycheck-mode 1)
-            (setq flycheck-check-syntax-automatically '(save new-line)
-                  flycheck-idle-change-delay 5.0
-                  flycheck-display-errors-delay 0.9
-                  flycheck-highlighting-mode 'symbols
-                  flycheck-indication-mode 'left-fringe
-                  ;; 'flycheck-fringe-bitmap-double-arrow
-                  flycheck-standard-error-navigation t ; [M-g n/p]
-                  flycheck-deferred-syntax-check nil
-                  )))
+  (use-package flycheck
+    :ensure t
+    :diminish flycheck-mode
+    :config (progn
+              (global-flycheck-mode 1)
+              (setq flycheck-check-syntax-automatically '(save new-line)
+                    flycheck-idle-change-delay 5.0
+                    flycheck-display-errors-delay 0.9
+                    flycheck-highlighting-mode 'symbols
+                    flycheck-indication-mode 'left-fringe
+                    ;; 'flycheck-fringe-bitmap-double-arrow
+                    flycheck-standard-error-navigation t ; [M-g n/p]
+                    flycheck-deferred-syntax-check nil
+                    )))
 
-(use-package flycheck-clangcheck
-  :ensure t
-  :after flycheck
-  )
+  (use-package flycheck-clangcheck
+    :ensure t
+    :after flycheck
+    )
 
-(use-package flycheck-irony
-  :ensure t
-  :after flycheck
-  :config (progn
-            (add-hook 'flycheck-mode-hook #'flycheck-irony-setup)
-            (flycheck-add-next-checker 'irony '(warning . c/c++-cppcheck))))
+  (use-package flycheck-irony
+    :ensure t
+    :after flycheck
+    :config (progn
+              (add-hook 'flycheck-mode-hook #'flycheck-irony-setup)
+              (flycheck-add-next-checker 'irony '(warning . c/c++-cppcheck))))
 
-(use-package flycheck-package
-  :ensure t
-  :defer t
-  :after flycheck
-  :init (flycheck-package-setup))
+  (use-package flycheck-clang-tidy
+    :ensure t
+    :after flycheck
+    :config (progn
+              (add-hook 'flycheck-mode-hook #'flycheck-clang-tidy-setup)
+              (setq flycheck-c/c++-clang-tidy-executable
+                    (or (executable-find "clang-tidy-5.0")
+                        (executable-find "clang-tidy")))))
 
-(use-package flycheck-pos-tip
-  :ensure t
-  :config (flycheck-pos-tip-mode 1))
+  (use-package flycheck-package
+    :ensure t
+    :defer t
+    :after flycheck
+    :init (flycheck-package-setup))
+
+  (use-package flycheck-pos-tip
+    :ensure t
+    :config (flycheck-pos-tip-mode 1))
 #+END_SRC
 
 ** Programming Language
@@ -834,7 +843,9 @@ This is my emacs config that is made of a melting pot of multiple sources.
     :bind (:map c++-mode-map
                 ([f5] . clang-format-buffer))
     :config
-    (setq clang-format-executable "clang-format-3.9")
+    (setq clang-format-executable
+          (or (executable-find "clang-format-5.0")
+              (executable-find "clang-format")))
     )
 
   (use-package cmake-mode
@@ -1264,12 +1275,15 @@ This is my emacs config that is made of a melting pot of multiple sources.
             (setq powerline-height (truncate (* 1.0 (frame-char-height))))
             (setq powerline-default-separator 'utf-8)))
 
-(use-package dracula-theme
-  :ensure t
-  :config (load-theme 'dracula t))
+;(use-package anti-zenburn-theme
+;  :ensure t)
 
-(use-package anti-zenburn-theme
+(use-package dracula-theme
   :ensure t)
+
+(use-package color-theme-sanityinc-tomorrow
+  :ensure t
+  :config (load-theme 'sanityinc-tomorrow-night t))
    #+END_SRC
 
 ** COMMENT Misc packages I did not know how to classify
@@ -1487,3 +1501,21 @@ This is my emacs config that is made of a melting pot of multiple sources.
      ;;; init.el ends here
 
    #+END_SRC
+
+
+#+BEGIN_SRC emacs-lisp
+  (defun spawn-gdb-mpi (env_file gdb_args)
+    (let ((str 
+           (with-temp-buffer
+             (insert-file-contents env_file)
+             (buffer-string))) lst)
+      (setq lst (split-string str "\000"))
+      (while lst
+        (setq cur (car lst))
+        (when (string-match "^\\(.*?\\)=\\(.*\\)" cur)
+          (setq var (match-string 1 cur))
+          (setq value (match-string 2 cur))
+          (setenv var value))
+        (setq lst (cdr lst))))
+    (gdb gdb_args))
+#+END_SRC

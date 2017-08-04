@@ -1,11 +1,11 @@
 #name: int main(argc, argv) { ... }
 # --
 int main(int argc, char *argv[]) {
-  akantu::initialize(&argc, &argv);
+  initialize(argc, argv);
 
   $0
 
-  akantu::finalize();
+  finalize();
 
-  return EXIT_SUCCESS;
+  return 0;
 }

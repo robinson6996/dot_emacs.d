@@ -9,7 +9,6 @@
 
 (defun apm-c-mode-setup ()
   "Tweaks and customisations for `c-mode'."
-  (aggressive-indent-mode 1)
   (c-set-style "akantu")
   ;; and treat linux style as safe for local variable
   (add-to-list 'safe-local-variable-values '(c-indentation-style . linux))
