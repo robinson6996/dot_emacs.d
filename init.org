@@ -271,6 +271,8 @@ This is my emacs config that is made of a melting pot of multiple sources.
      (add-hook 'server-visit-hook #'apm-graphic-frame-init)
      (apm-graphic-frame-init)
 
+     (define-key key-translation-map [?\C-h] [?\C-?])
+
      ;; Use regex searches and replace by default.
      (global-set-key (kbd "C-s") 'isearch-forward-regexp)
      (global-set-key (kbd "C-r") 'isearch-backward-regexp)
@@ -755,6 +757,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
     :after flycheck
     :config (progn
               (add-hook 'flycheck-mode-hook #'flycheck-clang-tidy-setup)
+              (flycheck-add-next-checker 'c/c++-clang-tidy '(warning . irony))
               (setq flycheck-c/c++-clang-tidy-executable
                     (or (executable-find "clang-tidy-5.0")
                         (executable-find "clang-tidy")))))
