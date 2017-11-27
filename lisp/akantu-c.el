@@ -12,6 +12,7 @@
                (indent-tabs-mode . nil)
                (c-offsets-alist . ((arglist-intro . ++)
                                    (innamespace . 0)
+				   (statement-cont . ++)
                                    (member-init-intro . ++)
                                    ))
                ))
