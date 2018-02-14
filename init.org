@@ -462,7 +462,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
 #+BEGIN_SRC emacs-lisp
 (use-package counsel-projectile
   :ensure t
-  :init (counsel-projectile-on))
+  :init (counsel-projectile-mode))
 
 (use-package projectile
   :ensure t
@@ -892,8 +892,8 @@ This is my emacs config that is made of a melting pot of multiple sources.
     :ensure t
     :diminish irony-mode
     :commands (irony-mode)
-    :bind (:irony-mode-map ([remap completion-at-point] . irony-completion-at-point-async)
-                           ([remap complete-symbol] . irony-completion-at-point-async))
+    :bind (:map irony-mode-map ([remap completion-at-point] . irony-completion-at-point-async)
+                ([remap complete-symbol] . irony-completion-at-point-async))
     :init (progn
             (advice-add 'irony-cdb-clang-complete :before 'apm-irony-cdb-clang-complete--auto-generate-clang-complete)
             (add-hook 'c-mode-hook 'irony-mode)
