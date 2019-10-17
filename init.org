@@ -127,6 +127,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
                                 ("melpa" . "http://melpa.org/packages/"))))
 
      (package-initialize)
+     (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
      ;; uncomment to debug package loading times
      ;; (setq use-package-verbose t)
@@ -138,6 +139,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
 
      (eval-when-compile
        (require 'use-package))
+
    #+END_SRC
 
    We install the alert package for some nice notification of something goes
@@ -192,8 +194,8 @@ This is my emacs config that is made of a melting pot of multiple sources.
      (setq tab-always-indent 'complete)
 
      ;; disable menu, tool and scroll-bars, show time
-     (menu-bar-mode 0)
-     (tool-bar-mode 0)
+     ;; (menu-bar-mode 0)
+     ;; (tool-bar-mode 0)
      (scroll-bar-mode 0)
      (when (fboundp 'horizontal-scroll-bar-mode)
        (horizontal-scroll-bar-mode 0))
@@ -222,22 +224,6 @@ This is my emacs config that is made of a melting pot of multiple sources.
      ;; they undo each other
      (setq scroll-preserve-screen-position 'always)
 
-     (defun apm-emoji-fontset-init ()
-       "Set fontset to display emoji correctly."
-       (if (eq system-type 'darwin)
-           ;; For NS/Cocoa
-           (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji") nil 'prepend)
-         ;; For Linux
-         (if (font-info "Symbola")
-             (set-fontset-font t 'symbol (font-spec :family "Symbola") nil 'prepend)
-           (alert "Symbola is not installed (ttf-ancient-fonts)"))))
-
-     (defvar apm-preferred-font-family "Inconsolata"
-       "Preferred font family to use.")
-
-     (defvar apm-preferred-font-family-package "fonts-inconsolata"
-       "Package to install to get `apm-preferred-font-family'.")
-
      (defvar apm-preferred-font-height 100
        "Preferred font height to use.")
 
@@ -245,27 +231,14 @@ This is my emacs config that is made of a melting pot of multiple sources.
        "Initialise properties specific to graphical display."
        (interactive)
        (when (display-graphic-p)
-         (apm-emoji-fontset-init)
+         ; (apm-emoji-fontset-init)
          ;(spaceline-install t)
          (setq frame-title-format '(buffer-file-name "%f" ("%b")))
          ;; don't use gtk style tooltips so instead can use pos-tip etc
          (custom-set-variables
           '(x-gtk-use-system-tooltips nil))
          (tooltip-mode -1)
-         (blink-cursor-mode -1)
-         (if (font-info apm-preferred-font-family)
-             (set-face-attribute 'default nil
-                                 :family apm-preferred-font-family
-                                 :height apm-preferred-font-height)
-           (alert (format "%s font not installed (%s)"
-                          apm-preferred-font-family
-                          apm-preferred-font-family-package)))
-         (if (font-info "FontAwesome")
-             ;; make sure to use FontAwesome for it's range in the unicode
-             ;; private use area since on Windows this doesn't happen
-             ;; automagically
-             (set-fontset-font "fontset-default" '(#xf000 . #xf8ff) "FontAwesome")
-           (alert "FontAwesome is not installed (fonts-font-awesome)."))))
+         (blink-cursor-mode -1)))
 
      ;; make sure graphical properties get set on client frames
      (add-hook 'server-visit-hook #'apm-graphic-frame-init)
@@ -284,7 +257,17 @@ This is my emacs config that is made of a melting pot of multiple sources.
      ;; Some global key binding
      (global-set-key (kbd "C-c ;") 'comment-region)
      (global-set-key (kbd "M-g") 'goto-line)
-     (global-set-key [f8] 'grep-find)
+     ;; (global-set-key [f8] 'grep-find)
+     (global-set-key [f8] 'my-revert-buffer)
+
+     (defun my-corrector-mode()
+     (interactive)
+     (flyspell-mode 1)
+     (flyspell-buffer)
+     )
+
+     (global-set-key [f5] 'my-corrector-mode) 
+
 
      ;; from http://endlessparentheses.com/fill-and-unfill-paragraphs-with-a-single-key.html
      (defun endless/fill-or-unfill ()
@@ -307,9 +290,9 @@ This is my emacs config that is made of a melting pot of multiple sources.
 
        (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
        
-       (visual-fill-column-mode 1)
+       ;; (visual-fill-column-mode 1)
        ;; and use adaptive-wrap to 'indent' paragraphs appropriately with visual-line-mode
-       (adaptive-wrap-prefix-mode 1) 
+       ;; (adaptive-wrap-prefix-mode 1) 
        ;; Enable flyspell
        (flyspell-mode 1)
        ;; give warning if words misspelled when typing
@@ -414,19 +397,10 @@ This is my emacs config that is made of a melting pot of multiple sources.
 #+END_SRC
 
 ** Visual
-   - [[https://julien.danjou.info/projects/emacs-packages][rainbow-mode]] - Display color on color-code string (hex/rgb) directly.
    - [[http://www.emacswiki.org/emacs/WhiteSpace][whitespace]] - =[built-in]= Visualize blanks (tab/space/newline).
    - [[http://emacsredux.com/blog/2014/08/25/a-peek-at-emacs-24-dot-4-prettify-symbols-mode/][prettify-symbol-mode]] - =[built-in]= displaying characters as fancy symbols (e.g. =lambda= -> =λ=)
-   - [[https://github.com/iqbalansari/emacs-emojify][emojify]] - Display emojis in Emacs.
 
 #+BEGIN_SRC emacs-lisp
-(use-package rainbow-mode
-  :ensure t
-  :diminish rainbow-mode
-  :commands (rainbow-mode)
-  :init (dolist (hook '(css-mode-hook html-mode-hook))
-          (add-hook hook #'rainbow-mode)))
-
 (use-package whitespace
   :diminish whitespace-mode
   :bind ([f3] . whitespace-cleanup)
@@ -499,7 +473,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
 ;    :config (aggressive-indent-global-mode t))
 
   (use-package compile
-    :bind ([f9] . compile)
+    :bind ([f9] . recompile)
     ;; automatically scroll to first error on output
     :config (setq compilation-scroll-output 'first-error))
 
@@ -521,7 +495,8 @@ This is my emacs config that is made of a melting pot of multiple sources.
     ;; turn on spell checking for strings and comments
     (flyspell-prog-mode)
     ;; highlight TODO etc in comments only
-    (fic-mode 1))
+    ;;(fic-mode t)
+    )
 
   (use-package prog-mode
     :config (progn
@@ -553,7 +528,6 @@ This is my emacs config that is made of a melting pot of multiple sources.
       - [[https://github.com/Sarcasm/company-irony][company-irony]] - irony back-end for C/C++
       - [[https://github.com/hotpxl/company-irony-c-headers][company-irony-c-headers]] - irony backend for C/C++ headers
       - [[https://github.com/syohex/emacs-company-jedi][company-jedi]] - jedi back-end
-      - [[https://github.com/dunn/company-emoji][company-emoji]] - emoji back-end 🐱
       - [[https://github.com/vspinu/company-math][company-math]] - math back-end to use in LaTeX formulas
       - [[https://github.com/expez/company-quickhelp][company-quickhelp]] - documentation popups for company.
       - [[https://github.com/Alexander-Miller/company-shell][company-shell]] - back-end to compete shell scripts
@@ -640,11 +614,6 @@ This is my emacs config that is made of a melting pot of multiple sources.
 (use-package company-jedi
   :ensure t
   :after company)
-
-(use-package company-emoji
-  :ensure t
-  :after company
-  :init (add-to-list 'company-backends 'company-emoji))
 
 (use-package company-math
   :ensure t
@@ -844,7 +813,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
   (use-package clang-format
     :ensure t
     :bind (:map c++-mode-map
-                ([f5] . clang-format-buffer))
+                ([M-f12] . clang-format-buffer))
     :config
     (setq clang-format-executable
           (or (executable-find "clang-format-5.0")
@@ -969,7 +938,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
   (setq mode-name "🐮")
   ;; use aggressive indent
   ;; (aggressive-indent-mode 1)
-  (fic-mode 1)
+  ;; (fic-mode 1)
   ;; make imenu list each package for easy navigation - from
   ;; https://github.com/jwiegley/use-package/issues/80#issuecomment-46687774
   (when (string= buffer-file-name (expand-file-name "init.el" "~/dot_emacs.d"))
@@ -1183,8 +1152,7 @@ This is my emacs config that is made of a melting pot of multiple sources.
 (use-package org
   :config
   (progn
-    (setq org-src-fontify-natively t)
-    (set-face-attribute 'org-block-background nil :background "#373844")))
+    (setq org-src-fontify-natively t)))
 #+END_SRC
 
 ** Internet
@@ -1233,18 +1201,9 @@ This is my emacs config that is made of a melting pot of multiple sources.
 #+END_SRC
 
 ** Appearance
-   - fancy-battery
    - [[https://github.com/TheBB/spaceline][spaceline]] - Powerline theme from [[https://github.com/syl20bnr/spacemacs][Spacemacs]].
 
-
-*** Theme
-   - [[https://draculatheme.com/emacs/][Dracula]] - /(dark)/ Dracula color theme
-   - [[https://github.com/m00natic/anti-zenburn-theme][Anti-Zenburn]] - /(light)/
-
    #+BEGIN_SRC emacs-lisp
-(use-package fancy-battery
-  :ensure t
-  :config (fancy-battery-mode 1))
 
 (use-package spaceline-config           ; A beautiful mode line
   :ensure spaceline
@@ -1281,12 +1240,6 @@ This is my emacs config that is made of a melting pot of multiple sources.
 ;(use-package anti-zenburn-theme
 ;  :ensure t)
 
-(use-package dracula-theme
-  :ensure t)
-
-(use-package color-theme-sanityinc-tomorrow
-  :ensure t
-  :config (load-theme 'sanityinc-tomorrow-night t))
    #+END_SRC
 
 ** COMMENT Misc packages I did not know how to classify
